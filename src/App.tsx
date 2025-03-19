@@ -1,18 +1,15 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import CodeEditor from './components/Editor'
+import "./App.css";
+
+import PreTestPage from "./pages/PreTestPage";
 
 function App() {
-
   return (
     <>
       <div>
-        <CodeEditor />
-        </div>
+        <PreTestPage />
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
