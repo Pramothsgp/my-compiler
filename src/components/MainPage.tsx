@@ -1,41 +1,34 @@
-import { useState } from "react";
+import { useContext } from "react";
 import CodeEditor from "./Editor";
 import Question from "./Question";
-
-const questions = [
-  "Write a program that prints 'Hello, World!' to the console.",
-  "Write a function to check if a number is prime.",
-  "Implement a Fibonacci sequence generator.",
-];
+import questions from "../data/sampleQuestion";
+import { AppContext } from "../App";
 
 const MainPage = () => {
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-  
-    return (
-      <div className="flex w-full h-screen">
-        {/* Sidebar */}
-        <div className="w-1/8 bg-gray-800 text-white p-4 space-y-4">
-          <h2 className="text-xl font-bold">Questions</h2>
-          {questions.map((_, index) => (
-            <button
-              key={index}
-              className={`block w-full text-left p-2 rounded hover:bg-gray-600 transition ${
-                index === currentQuestion ? "bg-blue-500" : ""
-              }`}
-              onClick={() => setCurrentQuestion(index)}
-            >
-              Question {index + 1}
-            </button>
-          ))}
-        </div>
-  
-        {/* Main Content */}
-        <div className="flex flex-col md:flex-row flex-1">
-          <Question question={questions[currentQuestion]} />
-          <CodeEditor />
-        </div>
+  const { question, setQuestion } = useContext(AppContext);
+  return (
+    <div className="flex w-full h-screen">
+      <div className="w-1/8 bg-gray-800 text-white p-4 space-y-4">
+        <h2 className="text-xl font-bold">Questions</h2>
+        {questions.map((_, index) => (
+          <button
+            key={index}
+            className={`block w-full text-left p-2 rounded hover:bg-gray-600 transition ${
+              index === question.id - 1 ? "bg-blue-500" : ""
+            }`}
+            onClick={() => setQuestion(questions[index])}
+          >
+            Question {index + 1}
+          </button>
+        ))}
       </div>
-    );
-  };
-  
-  export default MainPage;
+
+      <div className="flex flex-col md:flex-row flex-1">
+        <Question />
+        <CodeEditor />
+      </div>
+    </div>
+  );
+};
+
+export default MainPage;
