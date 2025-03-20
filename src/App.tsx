@@ -11,12 +11,10 @@ export const AppContext = createContext<any>(undefined);
 function App() {
   const [user, setUser] = useState<any>(null);
   const [question, setQuestion] = useState<any>(questions[0]);
-
+  const [testDuration, setTestDuration] = useState(3600);
   return (
     <>
-    <AuthProvider>
-
-      <AppContext.Provider value={{ user, setUser, question, setQuestion }}>
+      <AppContext.Provider value={{ user, setUser, question, setQuestion ,testDuration , setTestDuration}}>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/start-test" element={<PreTestPage />} />

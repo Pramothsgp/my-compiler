@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
 
 const PreTestPage = () => {
   const navigate=useNavigate()
-  const [testDuration, setTestDuration] = useState(60); // Test duration in minutes
-
+  const { testDuration } = useContext(AppContext);
   const handleStartTest = () => {
       navigate("/test")
   };

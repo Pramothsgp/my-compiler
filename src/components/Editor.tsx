@@ -7,9 +7,13 @@ import { db } from "../config/firebase";
 import { AuthContext } from "../context/AuthContext";
 
 const CodeEditor = () => {
+<<<<<<< HEAD
   const { question } = useContext(AppContext);
   const { email } = useContext(AuthContext)!;
 
+=======
+  const { question, testDuration, setTestDuration } = useContext(AppContext);
+>>>>>>> 604b5db243dd23124b7b41cc1f923941279c64d4
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState(question.code[language] || "");
   const [output, setOutput] = useState("");
@@ -31,6 +35,16 @@ const CodeEditor = () => {
     }
   }, [cooldown]);
 
+  // Test Timer Logic
+  useEffect(() => {
+    if (testDuration > 0) {
+      const timer = setInterval(() => {
+        setTestDuration((prev : number) => Math.max(prev - 1, 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [testDuration, setTestDuration]);
+
   const executeCode = async () => {
     if (cooldown > 0) return;
     setLoading(true);
@@ -43,11 +57,15 @@ const CodeEditor = () => {
       );
       setOutput(res);
     } catch (error: any) {
+<<<<<<< HEAD
       setOutput(
         `Error executing code: ${
           error.response?.data?.message || error.message
         }`
       );
+=======
+      setOutput(`Error executing code: ${error.response?.data?.message || error.message}`);
+>>>>>>> 604b5db243dd23124b7b41cc1f923941279c64d4
     } finally {
       setLoading(false);
     }
@@ -85,6 +103,7 @@ const CodeEditor = () => {
 
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
+<<<<<<< HEAD
       <div className="flex gap-2 mb-4 justify-around">
         <div className="flex gap-2 justify-start">
           <button
@@ -106,8 +125,28 @@ const CodeEditor = () => {
         </div>
         <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600-500">
           Submit test
+=======
+      {/* Test Timer Display */}
+      <div className="mb-4 text-lg font-bold">
+        Time Left: {Math.floor(testDuration / 60)}:{(testDuration % 60).toString().padStart(2, "0")}
+      </div>
+
+      <div className="flex gap-2 mb-4">
+        <button
+          className={`px-4 py-2 rounded ${language === "cpp" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          onClick={() => setLanguage("cpp")}
+        >
+          C++
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${language === "java" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          onClick={() => setLanguage("java")}
+        >
+          Java
+>>>>>>> 604b5db243dd23124b7b41cc1f923941279c64d4
         </button>
       </div>
+
       <div className="border rounded-lg overflow-hidden">
         <Editor
           height="60vh"
@@ -117,13 +156,10 @@ const CodeEditor = () => {
           theme="vs-dark"
         />
       </div>
+
       <div className="mt-4">
         <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={useCustomInput}
-            onChange={() => setUseCustomInput(!useCustomInput)}
-          />
+          <input type="checkbox" checked={useCustomInput} onChange={() => setUseCustomInput(!useCustomInput)} />
           Use Custom Input
         </label>
         {useCustomInput && (
@@ -136,13 +172,18 @@ const CodeEditor = () => {
           ></textarea>
         )}
       </div>
+
       <div className="mt-4 flex justify-between">
         <button
+<<<<<<< HEAD
           className={`px-4 py-2 rounded ${
             cooldown > 0
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-600 text-white"
           }`}
+=======
+          className={`px-4 py-2 rounded ${cooldown > 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"}`}
+>>>>>>> 604b5db243dd23124b7b41cc1f923941279c64d4
           onClick={executeCode}
           disabled={loading || cooldown > 0}
         >
@@ -152,13 +193,18 @@ const CodeEditor = () => {
             ? `Wait ${cooldown}s`
             : "Run Code"}
         </button>
+<<<<<<< HEAD
         <button
           className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
           onClick={handleSubmit}
         >
           Submit
         </button>
+=======
+        <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Submit</button>
+>>>>>>> 604b5db243dd23124b7b41cc1f923941279c64d4
       </div>
+
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto">
         <h3 className="font-bold">Output:</h3>
         <pre className="whitespace-pre-wrap text-sm overflow-auto">
