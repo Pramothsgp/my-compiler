@@ -1,10 +1,11 @@
 import Editor from "@monaco-editor/react";
 import { doc, setDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { runCode } from "../api/runCode";
+import { runCode, submitCode } from "../api/runCode";
 import { AppContext } from "../App";
 import { db } from "../config/firebase";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const CodeEditor = () => {
   const { question, testDuration, setTestDuration } = useContext(AppContext);
@@ -17,6 +18,9 @@ const CodeEditor = () => {
   const [cooldown, setCooldown] = useState(0);
   const [customInput, setCustomInput] = useState("");
   const [useCustomInput, setUseCustomInput] = useState(false);
+  const [hasSumitted, setHasSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [result, setResult] = useState({score : 0 , passed : 0});
 
   useEffect(() => {
     setCode(question?.code?.[language] || "");
@@ -34,7 +38,7 @@ const CodeEditor = () => {
   useEffect(() => {
     if (testDuration > 0) {
       const timer = setInterval(() => {
-        setTestDuration((prev) => Math.max(prev - 1, 0));
+        setTestDuration((prev : number) => Math.max(prev - 1, 0));
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -51,7 +55,7 @@ const CodeEditor = () => {
         useCustomInput ? customInput : question.input
       );
       setOutput(res);
-    } catch (error) {
+    } catch (error : any) {
       setOutput(
         `Error executing code: ${
           error.response?.data?.message || error.message
@@ -64,11 +68,21 @@ const CodeEditor = () => {
 
   const handleSubmit = async () => {
     if (!email) {
-      alert("User not logged in");
+      toast.error("Please login to submit your code", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
     const questionNumber = `code${question?.id}`;
+    setIsSubmitting(true);
     const userCodeData = {
       [questionNumber]: {
         "c++": language === "cpp" ? code : "",
@@ -77,15 +91,42 @@ const CodeEditor = () => {
     };
 
     try {
+      const res = await submitCode(
+        language,
+        code,
+        question
+      );
+      setResult(res);
+      setHasSubmitted(true);
       await setDoc(
         doc(db, "code", email),
         { code: userCodeData },
         { merge: true }
       );
-      alert(`Code for Question ${question?.id} submitted successfully!`);
+      toast.success("Code submitted successfully",{
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     } catch (error) {
       console.error("Error saving code: ", error);
-      alert("Failed to submit code. Please try again.");
+      toast.error("Error submitting code", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -120,7 +161,10 @@ const CodeEditor = () => {
           height="60vh"
           language={language}
           value={code}
-          onChange={(value) => setCode(value || "")}
+          onChange={(value) => {
+            setCode(value || "");
+            setHasSubmitted(false);
+          }}
           theme="vs-dark"
         />
       </div>
@@ -165,10 +209,23 @@ const CodeEditor = () => {
           className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
           onClick={handleSubmit}
         >
-          Submit
+          {isSubmitting ? "Loading ... " :"Submit"}
         </button>
       </div>
-
+      {hasSumitted && (
+        <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto flex flex-col gap-2">
+        
+        <div className="flex items-center gap-4">
+          <pre className="whitespace-pre-wrap text-sm">
+            <span className="font-semibold">Score:</span> {result.score}
+          </pre>
+          <pre className="whitespace-pre-wrap text-sm">
+            <span className="font-semibold">Test Cases:</span> {result.passed} / {(question.hiddenTestCases ?? []).length}
+          </pre>
+        </div>
+      </div>
+      
+      )}
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto">
         <h3 className="font-bold">Output:</h3>
         <pre className="whitespace-pre-wrap text-sm overflow-auto">

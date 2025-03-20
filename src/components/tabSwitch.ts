@@ -22,29 +22,41 @@ const usePreventReload = () => {
     };
   }, []);
 };
-
 const useTabSwitchCounter = () => {
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [lastSwitchTime, setLastSwitchTime] = useState<string | null>(null);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     const handleSwitch = () => {
       if (document.hidden || !document.hasFocus()) {
-        setTabSwitchCount((prevCount) => prevCount + 1);
-        setLastSwitchTime(new Date().toLocaleTimeString());
+        if (!isHidden) {
+          setTabSwitchCount((prevCount) => prevCount + 1);
+          setLastSwitchTime(new Date().toLocaleTimeString());
+          setIsHidden(true);
+        }
+      } else {
+        setIsHidden(false);
       }
     };
 
     document.addEventListener("visibilitychange", handleSwitch);
     window.addEventListener("blur", handleSwitch);
+    window.addEventListener("focus", handleSwitch);
 
     return () => {
       document.removeEventListener("visibilitychange", handleSwitch);
       window.removeEventListener("blur", handleSwitch);
+      window.removeEventListener("focus", handleSwitch);
     };
-  }, []);
+  }, [isHidden]);
 
-  return { tabSwitchCount, lastSwitchTime };
+  const resetTabSwitchCount = () => {
+    setTabSwitchCount(0);
+    setLastSwitchTime(null);
+  };
+
+  return { tabSwitchCount, lastSwitchTime, resetTabSwitchCount };
 };
 
 const useEnforceFullscreen = () => {

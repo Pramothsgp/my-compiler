@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AppContext } from "../App";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ const PreTestPage = () => {
           Please read the instructions carefully before starting the test.
         </p>
         <div className="text-lg font-semibold text-gray-800 mb-4">
-          Test Duration: {testDuration} minutes
+          Test Duration: {Math.ceil(testDuration / 60)} minutes
         </div>
         <div className="text-left text-gray-700 mb-6">
           <h2 className="text-lg font-bold mb-2">Instructions:</h2>

@@ -17,7 +17,10 @@ int main() {
     System.out.println("Hello, World!");
   }
 }`
-    }
+    },
+    hiddenTestCases: [
+      { input: "", output: "Hello, World!", points: 5 }
+    ]
   },
   {
     id: 2,
@@ -54,7 +57,12 @@ public class Main {
     System.out.println(isPrime(num));
   }
 }`
-    }
+    },
+    hiddenTestCases: [
+      { input: "2", output: "true", points: 5 },
+      { input: "10", output: "false", points: 5 },
+      { input: "13", output: "true", points: 5 }
+    ]
   },
   {
     id: 3,
@@ -97,7 +105,12 @@ public class Main {
     fibonacci(n);
   }
 }`
-    }
+    },
+    hiddenTestCases: [
+      { input: "1", output: "0", points: 5 },
+      { input: "3", output: "0 1 1", points: 5 },
+      { input: "7", output: "0 1 1 2 3 5 8", points: 5 }
+    ]
   },
   {
     id: 4,
@@ -165,13 +178,12 @@ public class Main {
     }
     return res.reverse().toString();
   }
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
-    String s1 = sc.next(), s2 = sc.next();
-    System.out.println(lcs(s1, s2));
-  }
 }`
-    }
+    },
+    hiddenTestCases: [
+      { input: '"abcdef" "acf"', output: '"acf"', points: 10 },
+      { input: '"xyz" "abc"', output: '""', points: 10 }
+    ]
   }
 ];
 

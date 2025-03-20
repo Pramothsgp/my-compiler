@@ -13,7 +13,7 @@ import {
 const MainPage = () => {
   const { question, setQuestion, testDuration } = useContext(AppContext);
   const { email } = useContext(AuthContext) ?? {};
-  const { tabSwitchCount, resetTabSwitchCount } = useTabSwitchCounter();
+  const { tabSwitchCount , resetTabSwitchCount} = useTabSwitchCounter();
   const { isFullscreen, enterFullscreen } = useEnforceFullscreen();
 
   const [isDisqualified, setIsDisqualified] = useState(false);
@@ -25,7 +25,7 @@ const MainPage = () => {
   }, [email]);
 
   useEffect(() => {
-    if (tabSwitchCount > 3) {
+    if (tabSwitchCount > 2) {
       localStorage.setItem(`disqualified_${email}`, "true");
       setIsDisqualified(true);
     } else {

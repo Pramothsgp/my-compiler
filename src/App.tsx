@@ -6,6 +6,7 @@ import AuthProvider from "./context/AuthContext";
 import questions from "./data/sampleQuestion";
 import Login from "./pages/auth/Login";
 import PreTestPage from "./pages/PreTestPage";
+import { ToastContainer } from "react-toastify";
 export const AppContext = createContext<any>(undefined);
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/test" element={<MainPage />} />
           </Routes>
         </AppContext.Provider>
+        <ToastContainer />
       </AuthProvider>
     </>
   );

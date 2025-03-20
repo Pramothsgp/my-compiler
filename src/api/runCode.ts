@@ -23,4 +23,18 @@ const runCode = async (language: string, code: string, stdin: string = "") => {
   }
 };
 
-export { runCode };
+const submitCode = async (language: string, code: string, question: any) => {
+  let score = 0,
+    passed = 0;
+  const testCases = question.hiddenTestCases ?? [];
+  for (const testCase of testCases) {
+    const result = await runCode(language, code, testCase.input);
+    if (result.trim() === testCase.output.trim()) {
+      score += testCase.points;
+      passed++;
+    }
+  }
+  return { score, passed };
+};
+
+export { runCode, submitCode };
