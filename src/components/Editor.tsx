@@ -4,7 +4,7 @@ import { runCode } from "../api/runCode";
 import { AppContext } from "../App";
 
 const CodeEditor = () => {
-  const { question } = useContext(AppContext);
+  const { question, testDuration, setTestDuration } = useContext(AppContext);
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState(question.code[language] || "");
   const [output, setOutput] = useState("");
@@ -26,6 +26,16 @@ const CodeEditor = () => {
     }
   }, [cooldown]);
 
+  // Test Timer Logic
+  useEffect(() => {
+    if (testDuration > 0) {
+      const timer = setInterval(() => {
+        setTestDuration((prev : number) => Math.max(prev - 1, 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [testDuration, setTestDuration]);
+
   const executeCode = async () => {
     if (cooldown > 0) return;
     setLoading(true);
@@ -33,7 +43,7 @@ const CodeEditor = () => {
     try {
       const res = await runCode(language, code, useCustomInput ? customInput : question.input);
       setOutput(res);
-    } catch (error : any) {
+    } catch (error: any) {
       setOutput(`Error executing code: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
@@ -42,6 +52,11 @@ const CodeEditor = () => {
 
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
+      {/* Test Timer Display */}
+      <div className="mb-4 text-lg font-bold">
+        Time Left: {Math.floor(testDuration / 60)}:{(testDuration % 60).toString().padStart(2, "0")}
+      </div>
+
       <div className="flex gap-2 mb-4">
         <button
           className={`px-4 py-2 rounded ${language === "cpp" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -56,6 +71,7 @@ const CodeEditor = () => {
           Java
         </button>
       </div>
+
       <div className="border rounded-lg overflow-hidden">
         <Editor
           height="60vh"
@@ -65,13 +81,10 @@ const CodeEditor = () => {
           theme="vs-dark"
         />
       </div>
+
       <div className="mt-4">
         <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={useCustomInput}
-            onChange={() => setUseCustomInput(!useCustomInput)}
-          />
+          <input type="checkbox" checked={useCustomInput} onChange={() => setUseCustomInput(!useCustomInput)} />
           Use Custom Input
         </label>
         {useCustomInput && (
@@ -84,18 +97,18 @@ const CodeEditor = () => {
           ></textarea>
         )}
       </div>
+
       <div className="mt-4 flex justify-between">
-        <button 
-          className={`px-4 py-2 rounded ${cooldown > 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"}`} 
-          onClick={executeCode} 
+        <button
+          className={`px-4 py-2 rounded ${cooldown > 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"}`}
+          onClick={executeCode}
           disabled={loading || cooldown > 0}
         >
           {loading ? "Running..." : cooldown > 0 ? `Wait ${cooldown}s` : "Run Code"}
         </button>
-        <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-          Submit
-        </button>
+        <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Submit</button>
       </div>
+
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto">
         <h3 className="font-bold">Output:</h3>
         <pre className="whitespace-pre-wrap text-sm overflow-auto">{loading ? "Compiling ...." : output || "No output yet."}</pre>

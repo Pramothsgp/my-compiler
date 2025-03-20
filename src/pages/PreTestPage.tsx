@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AppContext } from "../App";
 
 const PreTestPage = () => {
   const [isReady, setIsReady] = useState(false);
-  const [testDuration, setTestDuration] = useState(60); // Test duration in minutes
-
+  const { testDuration } = useContext(AppContext);
   const handleStartTest = () => {
     setIsReady(true);
   };

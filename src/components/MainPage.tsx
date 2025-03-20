@@ -6,11 +6,33 @@ import { AppContext } from "../App";
 import { useEnforceFullscreen, usePreventReload, useTabSwitchCounter } from "./tabSwitch";
 
 const MainPage = () => {
-  const { question, setQuestion } = useContext(AppContext);
+  const { question, setQuestion  ,testDuration} = useContext(AppContext);
   const {tabSwitchCount} = useTabSwitchCounter();
   usePreventReload();
   const { isFullscreen, enterFullscreen } = useEnforceFullscreen();
-  
+  if (tabSwitchCount > 3) {
+    return(
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center">
+        <h1 className="text-2xl md:text-3xl font-semibold mb-6">
+          You have exceeded the maximum number of tab switches.
+        </h1>
+        <p className="text-lg mb-6">
+          you are disqualified
+        </p>
+      </div>
+    );
+  }
+
+  if (testDuration <= 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center">
+        <h1 className="text-2xl md:text-3xl font-semibold mb-6">Time is up!</h1>
+        <p className="text-lg mb-6">
+          You have exceeded the maximum time limit.
+        </p>
+      </div>
+    );
+  }
   if(!isFullscreen){
     return(
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center">
