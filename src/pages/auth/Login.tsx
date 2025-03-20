@@ -1,12 +1,46 @@
-import { useState } from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { db } from "../../config/firebase";
+import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const { setEmail: setAuthEmail } = useContext(AuthContext)!;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const initialFormData = {
+    code: {
+      code1: { "c++": "", java: "" },
+      code2: { "c++": "", java: "" },
+      code3: { "c++": "", java: "" },
+      code4: { "c++": "", java: "" },
+    },
+    points : {
+      code1 : 0,
+      code2 : 0,
+      code3 : 0,
+      code4 : 0
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password });
+
+    if (!email.trim()) {
+      alert("Please enter a valid email.");
+      return;
+    }
+
+    try {
+      await setDoc(doc(db, "code", email), initialFormData);
+      setAuthEmail(email);
+      navigate("/start-test");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert("Failed to submit data. Please try again.");
+    }
   };
 
   return (
@@ -18,7 +52,7 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Email ( official college mail)
+              Email (official college mail)
             </label>
             <input
               type="email"

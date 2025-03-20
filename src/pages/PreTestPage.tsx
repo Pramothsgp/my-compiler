@@ -1,22 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PreTestPage = () => {
-  const [isReady, setIsReady] = useState(false);
+  const navigate=useNavigate()
   const [testDuration, setTestDuration] = useState(60); // Test duration in minutes
 
   const handleStartTest = () => {
-    setIsReady(true);
+      navigate("/test")
   };
 
-  if (isReady) {
-    return (
-      <div className="text-center text-xl font-bold mt-20">
-        Test Started! Good Luck!
-        <br />
-        Duration: {testDuration} minutes
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">

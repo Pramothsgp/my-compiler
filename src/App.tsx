@@ -5,6 +5,7 @@ import MainPage from "./components/MainPage";
 import questions from "./data/sampleQuestion";
 import Login from "./pages/auth/Login";
 import PreTestPage from "./pages/PreTestPage";
+import AuthProvider from "./context/AuthContext";
 export const AppContext = createContext<any>(undefined);
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
 
   return (
     <>
+    <AuthProvider>
+
       <AppContext.Provider value={{ user, setUser, question, setQuestion }}>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -20,6 +23,7 @@ function App() {
           <Route path="/test" element={<MainPage />} />
         </Routes>
       </AppContext.Provider>
+    </AuthProvider>
     </>
   );
 }
