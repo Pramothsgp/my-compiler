@@ -10,6 +10,8 @@ const CodeEditor = () => {
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [customInput, setCustomInput] = useState("");
+  const [useCustomInput, setUseCustomInput] = useState(false);
 
   useEffect(() => {
     setCode(question.code[language] || "");
@@ -29,7 +31,7 @@ const CodeEditor = () => {
     setLoading(true);
     setCooldown(30);
     try {
-      const res = await runCode(language, code, question.input);
+      const res = await runCode(language, code, useCustomInput ? customInput : question.input);
       setOutput(res);
     } catch (error : any) {
       setOutput(`Error executing code: ${error.response?.data?.message || error.message}`);
@@ -62,6 +64,25 @@ const CodeEditor = () => {
           onChange={(value) => setCode(value || "")}
           theme="vs-dark"
         />
+      </div>
+      <div className="mt-4">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={useCustomInput}
+            onChange={() => setUseCustomInput(!useCustomInput)}
+          />
+          Use Custom Input
+        </label>
+        {useCustomInput && (
+          <textarea
+            className="w-full mt-2 p-2 border rounded-lg"
+            rows={4}
+            placeholder="Enter custom input..."
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+          ></textarea>
+        )}
       </div>
       <div className="mt-4 flex justify-between">
         <button 
