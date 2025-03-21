@@ -1,16 +1,13 @@
 import Editor from "@monaco-editor/react";
-import { doc, setDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { endTest, runCode, submitCode } from "../api/runCode";
 import { AppContext } from "../App";
-import { db } from "../config/firebase";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const CodeEditor = () => {
   const { question, testDuration, setTestDuration } = useContext(AppContext);
-
   const { email } = useContext(AuthContext) ?? {};
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState(question?.code?.[language] || "");
@@ -19,12 +16,12 @@ const CodeEditor = () => {
   const [cooldown, setCooldown] = useState(0);
   const [customInput, setCustomInput] = useState("");
   const [useCustomInput, setUseCustomInput] = useState(false);
-  const [hasSumitted, setHasSubmitted] = useState(question.isSubmitted);
+  const [hasSubmitted, setHasSubmitted] = useState(question.isSubmitted);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState({ score: 0, passed: 0 });
 
-
   const navigate = useNavigate();
+
   useEffect(() => {
     setCode(question?.code?.[language] || "");
     setOutput("");
@@ -73,115 +70,36 @@ const CodeEditor = () => {
   };
 
   const handleEndTest = async () => {
-    if (!email){
-      toast.error("Please login to end the test", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+    if (!email) {
+      toast.error("Please login to end the test");
       return;
-    } 
-    endTest(testDuration , email)
-    .then(() => toast.success("Test Ended",{
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-    }))
-    .then(() =>{
-        navigate("/");
-    })
-      .catch(() => {
-        toast.error("Error ending test \n Please try again", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      });
-  }
+    }
+    endTest(testDuration, email)
+      .then(() => toast.success("Test Ended"))
+      .then(() => navigate("/"))
+      .catch(() => toast.error("Error ending test. Please try again"));
+  };
+
   const handleSubmit = async () => {
-    if (hasSumitted) {
-      toast.error("You have already submitted this code", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+    if (hasSubmitted) {
+      toast.error("You have already submitted this code");
       return;
     }
     if (!email) {
-      toast.error("Please login to submit your code", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+      toast.error("Please login to submit your code");
       return;
     }
 
-    const questionNumber = `code${question?.id}`;
     setIsSubmitting(true);
-    const userCodeData = {
-      [questionNumber]: {
-        "c++": language === "cpp" ? code : "",
-        java: language === "java" ? code : "",
-      },
-    };
-
     try {
-      const res = await submitCode(language, code, question , email);
+      const res = await submitCode(language, code, question, email);
       setResult(res);
       setHasSubmitted(true);
       question.isSubmitted = true;
-      await setDoc(
-        doc(db, "code", email),
-        { code: userCodeData },
-        { merge: true }
-      );
-      toast.success("Code submitted successfully", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.success("Code submitted successfully");
     } catch (error) {
       console.error("Error saving code: ", error);
-      toast.error("Error submitting code", {
-        position: "bottom-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("Error submitting code");
     } finally {
       setIsSubmitting(false);
     }
@@ -212,9 +130,13 @@ const CodeEditor = () => {
             Java
           </button>
         </div>
-        <div className="">
+        <div>
           <button
-          className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleEndTest}>End Test</button>
+            className="px-4 py-2 rounded bg-red-500 text-white"
+            onClick={handleEndTest}
+          >
+            End Test
+          </button>
         </div>
       </div>
 
@@ -229,26 +151,6 @@ const CodeEditor = () => {
           }}
           theme="vs-dark"
         />
-      </div>
-
-      <div className="mt-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={useCustomInput}
-            onChange={() => setUseCustomInput(!useCustomInput)}
-          />
-          Use Custom Input
-        </label>
-        {useCustomInput && (
-          <textarea
-            className="w-full mt-2 p-2 border rounded-lg"
-            rows={4}
-            placeholder="Enter custom input..."
-            value={customInput}
-            onChange={(e) => setCustomInput(e.target.value)}
-          ></textarea>
-        )}
       </div>
 
       <div className="mt-4 flex justify-between">
@@ -271,27 +173,20 @@ const CodeEditor = () => {
           className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
           onClick={handleSubmit}
         >
-          {isSubmitting ? "Loading ... " : "Submit"}
+          {isSubmitting ? "Loading ..." : "Submit"}
         </button>
       </div>
-      {hasSumitted && (
-        <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto flex flex-col gap-2">
-          <div className="flex items-center gap-4">
-            <pre className="whitespace-pre-wrap text-sm">
-              <span className="font-semibold">Score:</span> {result.score}
-            </pre>
-            <pre className="whitespace-pre-wrap text-sm">
-              <span className="font-semibold">Test Cases:</span> {result.passed}{" "}
-              / {(question.hiddenTestCases ?? []).length}
-            </pre>
-          </div>
+
+      {hasSubmitted && (
+        <div className="mt-4">
+          <p>Score: {result.score}</p>
+          <p>Test Cases Passed: {result.passed}</p>
         </div>
       )}
-      <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto">
+
+      <div className="mt-4 p-3 bg-gray-100 border rounded-lg">
         <h3 className="font-bold">Output:</h3>
-        <pre className="whitespace-pre-wrap text-sm overflow-auto">
-          {loading ? "Compiling ...." : output || "No output yet."}
-        </pre>
+        <pre>{loading ? "Compiling ...." : output || "No output yet."}</pre>
       </div>
     </div>
   );

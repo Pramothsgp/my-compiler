@@ -1,4 +1,6 @@
 import axios from "axios";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 const runCode = async (language: string, code: string, stdin: string = "") => {
   try {
@@ -18,12 +20,17 @@ const runCode = async (language: string, code: string, stdin: string = "") => {
     );
     return response.data.run.output || response.data.run.stderr;
   } catch (err: any) {
-    console.log(err);
+    console.error(err);
     return err;
   }
 };
 
-const submitCode = async (language: string, code: string, question: any , email : string) => {
+const submitCode = async (
+  language: string,
+  code: string,
+  question: any,
+  email: string
+) => {
   let score = 0,
     passed = 0;
   const testCases = question.hiddenTestCases ?? [];
@@ -34,11 +41,28 @@ const submitCode = async (language: string, code: string, question: any , email 
       passed++;
     }
   }
+
+  const questionNumber = `code${question?.id}`;
+  const userCodeData = {
+    [questionNumber]: {
+      "c++": language === "cpp" ? code : "",
+      java: language === "java" ? code : "",
+      points: score,
+    },
+    
+  };
+
+  await setDoc(
+    doc(db, "code", email),
+    { code: userCodeData },
+    { merge: true }
+  );
+
   return { score, passed };
 };
 
-const endTest = async (testDuration: number , email : string) => {
-  return new Promise((resolve, reject) => {
+const endTest = async (testDuration: number, email: string) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       console.log(testDuration, email);
       resolve("Test ended");
@@ -46,4 +70,5 @@ const endTest = async (testDuration: number , email : string) => {
   });
 };
 
-export { runCode, submitCode ,endTest};
+export { endTest, runCode, submitCode };
+

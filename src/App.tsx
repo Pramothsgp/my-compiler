@@ -7,6 +7,7 @@ import questions from "./data/sampleQuestion";
 import Login from "./pages/auth/Login";
 import PreTestPage from "./pages/PreTestPage";
 import { ToastContainer } from "react-toastify";
+import Leaderboard from "./components/Leaderboard";
 export const AppContext = createContext<any>(undefined);
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/start-test" element={<PreTestPage />} />
             <Route path="/test" element={<MainPage />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </AppContext.Provider>
         <ToastContainer />
