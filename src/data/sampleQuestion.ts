@@ -20,7 +20,8 @@ int main() {
     },
     hiddenTestCases: [
       { input: "", output: "Hello, World!", points: 5 }
-    ]
+    ],
+    isSubmitted : false,
   },
   {
     id: 2,
@@ -62,7 +63,8 @@ public class Main {
       { input: "2", output: "true", points: 5 },
       { input: "10", output: "false", points: 5 },
       { input: "13", output: "true", points: 5 }
-    ]
+    ],
+    isSubmitted : false,
   },
   {
     id: 3,
@@ -110,7 +112,8 @@ public class Main {
       { input: "1", output: "0", points: 5 },
       { input: "3", output: "0 1 1", points: 5 },
       { input: "7", output: "0 1 1 2 3 5 8", points: 5 }
-    ]
+    ],
+    isSubmitted : false,
   },
   {
     id: 4,
@@ -183,7 +186,8 @@ public class Main {
     hiddenTestCases: [
       { input: '"abcdef" "acf"', output: '"acf"', points: 10 },
       { input: '"xyz" "abc"', output: '""', points: 10 }
-    ]
+    ],
+    isSubmitted : false,
   }
 ];
 

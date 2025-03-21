@@ -18,12 +18,16 @@ const CodeEditor = () => {
   const [cooldown, setCooldown] = useState(0);
   const [customInput, setCustomInput] = useState("");
   const [useCustomInput, setUseCustomInput] = useState(false);
-  const [hasSumitted, setHasSubmitted] = useState(false);
+  const [hasSumitted, setHasSubmitted] = useState(question.isSubmitted);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState({score : 0 , passed : 0});
 
   useEffect(() => {
     setCode(question?.code?.[language] || "");
+    setOutput("");
+    setHasSubmitted(question.isSubmitted);
+    setIsSubmitting(false);
+
   }, [language, question]);
 
   useEffect(() => {
@@ -67,6 +71,21 @@ const CodeEditor = () => {
   };
 
   const handleSubmit = async () => {
+    if(hasSumitted){
+
+      toast.error("You have already submitted this code", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+   
+    }
     if (!email) {
       toast.error("Please login to submit your code", {
         position: "top-right",
@@ -98,6 +117,7 @@ const CodeEditor = () => {
       );
       setResult(res);
       setHasSubmitted(true);
+      question.isSubmitted = true;
       await setDoc(
         doc(db, "code", email),
         { code: userCodeData },
