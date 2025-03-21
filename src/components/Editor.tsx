@@ -1,11 +1,12 @@
 import Editor from "@monaco-editor/react";
 import { doc, setDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { runCode, submitCode } from "../api/runCode";
+import { endTest, runCode, submitCode } from "../api/runCode";
 import { AppContext } from "../App";
 import { db } from "../config/firebase";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CodeEditor = () => {
   const { question, testDuration, setTestDuration } = useContext(AppContext);
@@ -20,14 +21,15 @@ const CodeEditor = () => {
   const [useCustomInput, setUseCustomInput] = useState(false);
   const [hasSumitted, setHasSubmitted] = useState(question.isSubmitted);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState({score : 0 , passed : 0});
+  const [result, setResult] = useState({ score: 0, passed: 0 });
 
+
+  const navigate = useNavigate();
   useEffect(() => {
     setCode(question?.code?.[language] || "");
     setOutput("");
     setHasSubmitted(question.isSubmitted);
     setIsSubmitting(false);
-
   }, [language, question]);
 
   useEffect(() => {
@@ -42,7 +44,7 @@ const CodeEditor = () => {
   useEffect(() => {
     if (testDuration > 0) {
       const timer = setInterval(() => {
-        setTestDuration((prev : number) => Math.max(prev - 1, 0));
+        setTestDuration((prev: number) => Math.max(prev - 1, 0));
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -59,7 +61,7 @@ const CodeEditor = () => {
         useCustomInput ? customInput : question.input
       );
       setOutput(res);
-    } catch (error : any) {
+    } catch (error: any) {
       setOutput(
         `Error executing code: ${
           error.response?.data?.message || error.message
@@ -70,9 +72,49 @@ const CodeEditor = () => {
     }
   };
 
+  const handleEndTest = async () => {
+    if (!email){
+      toast.error("Please login to end the test", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    } 
+    endTest(testDuration , email)
+    .then(() => toast.success("Test Ended",{
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    }))
+    .then(() =>{
+        navigate("/");
+    })
+      .catch(() => {
+        toast.error("Error ending test \n Please try again", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      });
+  }
   const handleSubmit = async () => {
-    if(hasSumitted){
-
+    if (hasSumitted) {
       toast.error("You have already submitted this code", {
         position: "top-right",
         autoClose: 3000,
@@ -84,7 +126,6 @@ const CodeEditor = () => {
         theme: "dark",
       });
       return;
-   
     }
     if (!email) {
       toast.error("Please login to submit your code", {
@@ -110,11 +151,7 @@ const CodeEditor = () => {
     };
 
     try {
-      const res = await submitCode(
-        language,
-        code,
-        question
-      );
+      const res = await submitCode(language, code, question , email);
       setResult(res);
       setHasSubmitted(true);
       question.isSubmitted = true;
@@ -123,7 +160,7 @@ const CodeEditor = () => {
         { code: userCodeData },
         { merge: true }
       );
-      toast.success("Code submitted successfully",{
+      toast.success("Code submitted successfully", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -156,24 +193,29 @@ const CodeEditor = () => {
         Time Left: {Math.floor(testDuration / 60)}:
         {(testDuration % 60).toString().padStart(2, "0")}
       </div>
-
-      <div className="flex gap-2 mb-4">
-        <button
-          className={`px-4 py-2 rounded ${
-            language === "cpp" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setLanguage("cpp")}
-        >
-          C++
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${
-            language === "java" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setLanguage("java")}
-        >
-          Java
-        </button>
+      <div className="flex justify-between">
+        <div className="flex gap-2 mb-4">
+          <button
+            className={`px-4 py-2 rounded ${
+              language === "cpp" ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+            onClick={() => setLanguage("cpp")}
+          >
+            C++
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${
+              language === "java" ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+            onClick={() => setLanguage("java")}
+          >
+            Java
+          </button>
+        </div>
+        <div className="">
+          <button
+          className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleEndTest}>End Test</button>
+        </div>
       </div>
 
       <div className="border rounded-lg overflow-hidden">
@@ -229,22 +271,21 @@ const CodeEditor = () => {
           className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
           onClick={handleSubmit}
         >
-          {isSubmitting ? "Loading ... " :"Submit"}
+          {isSubmitting ? "Loading ... " : "Submit"}
         </button>
       </div>
       {hasSumitted && (
         <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto flex flex-col gap-2">
-        
-        <div className="flex items-center gap-4">
-          <pre className="whitespace-pre-wrap text-sm">
-            <span className="font-semibold">Score:</span> {result.score}
-          </pre>
-          <pre className="whitespace-pre-wrap text-sm">
-            <span className="font-semibold">Test Cases:</span> {result.passed} / {(question.hiddenTestCases ?? []).length}
-          </pre>
+          <div className="flex items-center gap-4">
+            <pre className="whitespace-pre-wrap text-sm">
+              <span className="font-semibold">Score:</span> {result.score}
+            </pre>
+            <pre className="whitespace-pre-wrap text-sm">
+              <span className="font-semibold">Test Cases:</span> {result.passed}{" "}
+              / {(question.hiddenTestCases ?? []).length}
+            </pre>
+          </div>
         </div>
-      </div>
-      
       )}
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg overflow-auto">
         <h3 className="font-bold">Output:</h3>

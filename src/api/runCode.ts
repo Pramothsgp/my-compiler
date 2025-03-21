@@ -23,7 +23,7 @@ const runCode = async (language: string, code: string, stdin: string = "") => {
   }
 };
 
-const submitCode = async (language: string, code: string, question: any) => {
+const submitCode = async (language: string, code: string, question: any , email : string) => {
   let score = 0,
     passed = 0;
   const testCases = question.hiddenTestCases ?? [];
@@ -37,4 +37,13 @@ const submitCode = async (language: string, code: string, question: any) => {
   return { score, passed };
 };
 
-export { runCode, submitCode };
+const endTest = async (testDuration: number , email : string) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log(testDuration, email);
+      resolve("Test ended");
+    }, 1000);
+  });
+};
+
+export { runCode, submitCode ,endTest};

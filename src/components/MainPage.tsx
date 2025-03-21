@@ -9,11 +9,12 @@ import {
   usePreventReload,
   useTabSwitchCounter,
 } from "./tabSwitch";
+import { endTest } from "../api/runCode";
 
 const MainPage = () => {
   const { question, setQuestion, testDuration } = useContext(AppContext);
   const { email } = useContext(AuthContext) ?? {};
-  const { tabSwitchCount , resetTabSwitchCount} = useTabSwitchCounter();
+  const { tabSwitchCount } = useTabSwitchCounter();
   const { isFullscreen, enterFullscreen } = useEnforceFullscreen();
 
   const [isDisqualified, setIsDisqualified] = useState(false);
@@ -56,6 +57,8 @@ const MainPage = () => {
   }
 
   if (testDuration <= 0) {
+    if(email)
+    endTest(0, email);
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center">
         <h1 className="text-2xl md:text-3xl font-semibold mb-6">Time is up!</h1>
@@ -76,7 +79,6 @@ const MainPage = () => {
           onClick={() => {
             enterFullscreen();
             setTimeout(() => document.body.focus(), 300); // Ensures focus
-            resetTabSwitchCount(); // Reset count when entering fullscreen again
           }}
           className="px-6 py-3 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-300"
         >

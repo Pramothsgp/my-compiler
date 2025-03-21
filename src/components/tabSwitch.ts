@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const usePreventReload = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "F5" || (event.ctrlKey && event.key === "r") || (event.metaKey && event.key === "r")) {
+      if (
+        event.key === "F5" || 
+        (event.ctrlKey && (event.key === "r" || event.key === "Shift" || event.key === "i" || event.key === "j" || event.key === "c" || event.key === 'v')) || 
+        (event.metaKey && (event.key === "r" || event.key === "Shift" || event.key === "i" || event.key === "j" || event.key === "c" || event.key === 'v')) || 
+        event.key === "F12"
+      ) {
         event.preventDefault();
-        alert("Reload is disabled!");
+        toast.error("This action is disabled!", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     };
 
@@ -13,15 +28,38 @@ const usePreventReload = () => {
       event.preventDefault();
     };
 
+    const detectDevTools = () => {
+      const element = new Image();
+      Object.defineProperty(element, "id", {
+        get: function () {
+          toast.error("DevTools detected! This action is disabled!",{
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        },
+      });
+      console.log(element);
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("contextmenu", handleRightClick); // Disable right-click
+    window.addEventListener("devtoolschange", detectDevTools);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("contextmenu", handleRightClick);
+      window.removeEventListener("devtoolschange", detectDevTools);
     };
   }, []);
 };
+
+
 const useTabSwitchCounter = () => {
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [lastSwitchTime, setLastSwitchTime] = useState<string | null>(null);
