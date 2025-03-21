@@ -152,7 +152,25 @@ const CodeEditor = () => {
           theme="vs-dark"
         />
       </div>
-
+      <div className="mt-4">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={useCustomInput}
+            onChange={() => setUseCustomInput(!useCustomInput)}
+          />
+          Use Custom Input
+        </label>
+        {useCustomInput && (
+          <textarea
+            className="w-full mt-2 p-2 border rounded-lg"
+            rows={4}
+            placeholder="Enter custom input..."
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+          ></textarea>
+        )}
+      </div>
       <div className="mt-4 flex justify-between">
         <button
           className={`px-4 py-2 rounded ${
