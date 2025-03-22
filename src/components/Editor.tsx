@@ -1,10 +1,10 @@
 import Editor from "@monaco-editor/react";
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { endTest, runCode, submitCode } from "../api/runCode";
 import { AppContext } from "../App";
 import { AuthContext } from "../context/AuthContext";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const CodeEditor = () => {
   const { question, testDuration, setTestDuration } = useContext(AppContext);
@@ -50,7 +50,7 @@ const CodeEditor = () => {
   const executeCode = async () => {
     if (cooldown > 0) return;
     setLoading(true);
-    setCooldown(0);
+    setCooldown(30);
     try {
       const res = await runCode(
         language,
@@ -81,10 +81,11 @@ const CodeEditor = () => {
   };
 
   const handleSubmit = async () => {
-    // if (hasSubmitted) {
-    //   toast.error("You have already submitted this code");
-    //   return;
-    // }
+    if (hasSubmitted) {
+      toast.error("You have already submitted this code");
+      return;
+    }
+
     if (!email) {
       toast.error("Please login to submit your code");
       return;
@@ -195,12 +196,12 @@ const CodeEditor = () => {
         </button>
       </div>
 
-      {hasSubmitted && (
+      {/* { hasSubmitted && (
         <div className="mt-4">
           <p>Score: {result.score}</p>
           <p>Test Cases Passed: {result.passed}</p>
         </div>
-      )}
+      )} */}
 
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg">
         <h3 className="font-bold">Output:</h3>
