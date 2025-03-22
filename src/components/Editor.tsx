@@ -50,7 +50,7 @@ const CodeEditor = () => {
   const executeCode = async () => {
     if (cooldown > 0) return;
     setLoading(true);
-    setCooldown(30);
+    setCooldown(0);
     try {
       const res = await runCode(
         language,
@@ -81,10 +81,10 @@ const CodeEditor = () => {
   };
 
   const handleSubmit = async () => {
-    if (hasSubmitted) {
-      toast.error("You have already submitted this code");
-      return;
-    }
+    // if (hasSubmitted) {
+    //   toast.error("You have already submitted this code");
+    //   return;
+    // }
     if (!email) {
       toast.error("Please login to submit your code");
       return;

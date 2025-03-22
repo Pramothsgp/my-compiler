@@ -43,18 +43,18 @@ const MainPage = () => {
     }
   }, [isDisqualified, email]);
 
-  usePreventReload();
+  // usePreventReload();
 
-  if (isDisqualified) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center">
-        <h1 className="text-2xl md:text-3xl font-semibold mb-6">
-          You have exceeded the maximum number of tab switches.
-        </h1>
-        <p className="text-lg mb-6">You are disqualified.</p>
-      </div>
-    );
-  }
+  // if (isDisqualified) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white text-center">
+  //       <h1 className="text-2xl md:text-3xl font-semibold mb-6">
+  //         You have exceeded the maximum number of tab switches.
+  //       </h1>
+  //       <p className="text-lg mb-6">You are disqualified.</p>
+  //     </div>
+  //   );
+  // }
 
   if (testDuration <= 0) {
     if(email)
