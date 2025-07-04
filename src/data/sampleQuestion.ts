@@ -16,12 +16,13 @@ int main() {
   public static void main(String[] args) {
     System.out.println("Hello, World!");
   }
-}`
+}`,
+      python: `print("Hello, World!")`
     },
     hiddenTestCases: [
       { input: "", output: "Hello, World!", points: 5 }
     ],
-    isSubmitted : false,
+    isSubmitted: false,
   },
   {
     id: 2,
@@ -57,14 +58,24 @@ public class Main {
     int num = sc.nextInt();
     System.out.println(isPrime(num));
   }
-}`
+}`,
+      python: `def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+n = int(input())
+print(str(is_prime(n)).lower())`
     },
     hiddenTestCases: [
       { input: "2", output: "true", points: 5 },
       { input: "10", output: "false", points: 5 },
       { input: "13", output: "true", points: 5 }
     ],
-    isSubmitted : false,
+    isSubmitted: false,
   },
   {
     id: 3,
@@ -106,14 +117,22 @@ public class Main {
     int n = sc.nextInt();
     fibonacci(n);
   }
-}`
+}`,
+      python: `def fibonacci(n):
+    a, b = 0, 1
+    for i in range(n):
+        print(a, end=" ")
+        a, b = b, a + b
+
+n = int(input())
+fibonacci(n)`
     },
     hiddenTestCases: [
       { input: "1", output: "0", points: 5 },
       { input: "3", output: "0 1 1", points: 5 },
       { input: "7", output: "0 1 1 2 3 5 8", points: 5 }
     ],
-    isSubmitted : false,
+    isSubmitted: false,
   },
   {
     id: 4,
@@ -181,13 +200,47 @@ public class Main {
     }
     return res.reverse().toString();
   }
-}`
+  public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+    String s1 = sc.next();
+    String s2 = sc.next();
+    System.out.println(lcs(s1, s2));
+  }
+}`,
+      python: `def lcs(s1, s2):
+    m, n = len(s1), len(s2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if s1[i-1] == s2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    
+    res = []
+    i, j = m, n
+    while i > 0 and j > 0:
+        if s1[i-1] == s2[j-1]:
+            res.append(s1[i-1])
+            i -= 1
+            j -= 1
+        elif dp[i-1][j] > dp[i][j-1]:
+            i -= 1
+        else:
+            j -= 1
+    
+    return ''.join(reversed(res))
+
+s1 = input().strip('"')
+s2 = input().strip('"')
+print(f'"{lcs(s1, s2)}"')`
     },
     hiddenTestCases: [
       { input: '"abcdef" "acf"', output: '"acf"', points: 10 },
       { input: '"xyz" "abc"', output: '""', points: 10 }
     ],
-    isSubmitted : false,
+    isSubmitted: false,
   }
 ];
 
