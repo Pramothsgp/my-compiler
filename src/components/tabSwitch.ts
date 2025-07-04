@@ -89,8 +89,8 @@ const useTabSwitchCounter = () => {
     };
   }, [isHidden]);
 
-  const resetTabSwitchCount = () => {
-    setTabSwitchCount(0);
+  const resetTabSwitchCount = (value : number = 0) => {
+    setTabSwitchCount(value);
     setLastSwitchTime(null);
   };
 

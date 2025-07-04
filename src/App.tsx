@@ -18,6 +18,7 @@ import LeaderBoardDashBoard from "./pages/admin/LeaderBoardDashBoard";
 import ProtectedRoute from "./context/ProtectedRoute";
 import FallBack from "./pages/auth/FallBack";
 import CreateQuiz from "./pages/admin/quiz/CreateQuiz";
+import QuizMainPage from "./pages/quiz/QuizMainPage";
 
 export const AppContext = createContext<any>(undefined);
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="/start-test" element={<PreTestPage />} />
             {/* Use a fallback testId if question is null */}
             <Route path="/test" element={<MainPage />} />
+            <Route path="/quiz" element={<QuizMainPage />} />
             {/* Admin Routes */}
             <Route path="/admin/leaderboard/details" element={<Leaderboard />} />
             <Route path="/admin" element={<AdminPanel />} />
