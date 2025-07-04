@@ -1,23 +1,7 @@
-import { collection, getDocs } from "firebase/firestore";
+
 import React, { useEffect, useState } from "react";
-import { db } from "../config/firebase";
+import { getLeaderboard } from "../api/firebaseFunctions";
 
-// Define types for our data structure
-interface CodeItem {
-  "c++": string;
-  java: string;
-  points: number;
-}
-
-interface UserData {
-  code: {
-    code1: CodeItem;
-    code2: CodeItem;
-    code3: CodeItem;
-    code4: CodeItem;
-    [key: string]: CodeItem;
-  };
-}
 
 interface LeaderboardItem {
   email: string;
@@ -28,40 +12,14 @@ const Leaderboard: React.FC = () => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+  const testId = new URLSearchParams(window.location.search).get("testId") || "";
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       try {
         setLoading(true);
-        const codeCollection = collection(db, "code");
-        const querySnapshot = await getDocs(codeCollection);
+        const res = await getLeaderboard(testId);
 
-        const leaderboardData: LeaderboardItem[] = [];
-
-        querySnapshot.forEach((doc) => {
-          const userData = doc.data() as UserData;
-          const email = doc.id; // Document ID is the user's email
-
-          // Calculate total points for this user
-          let totalPoints = 0;
-
-          // Loop through all code entries in the user's document
-          for (const codeKey in userData.code) {
-            if (Object.prototype.hasOwnProperty.call(userData.code, codeKey)) {
-              const codeItem = userData.code[codeKey];
-              // Handle NaN points by defaulting to 0
-              const points = isNaN(codeItem.points) ? 0 : codeItem.points;
-              totalPoints += points;
-            }
-          }
-
-          leaderboardData.push({ email, totalPoints });
-        });
-
-        // Sort leaderboard by total points in descending order
-        leaderboardData.sort((a, b) => b.totalPoints - a.totalPoints);
-
-        setLeaderboard(leaderboardData);
+        setLeaderboard(res);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching leaderboard data:", err);
@@ -73,7 +31,7 @@ const Leaderboard: React.FC = () => {
     fetchLeaderboardData();
   }, []);
 
-  // Trophy SVG for top 3 positions
+
   const renderTrophy = (position: number) => {
     if (position === 0) {
       return (
