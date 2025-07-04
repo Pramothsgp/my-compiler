@@ -36,6 +36,12 @@ const AdminPanel = () => {
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Leaderboard</h2>
             <p className="text-gray-600">View the leaderboard for all programming tests</p>
           </Link>
+
+          <Link to="/admin/create-quiz" 
+                className="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Create Quiz</h2>
+            <p className="text-gray-600">Create a new quiz with multiple-choice questions</p>
+          </Link>
         </div>
       </div>
     </div>

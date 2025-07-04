@@ -17,6 +17,7 @@ import CreateTest from "./pages/admin/tests/CreateTest";
 import LeaderBoardDashBoard from "./pages/admin/LeaderBoardDashBoard";
 import ProtectedRoute from "./context/ProtectedRoute";
 import FallBack from "./pages/auth/FallBack";
+import CreateQuiz from "./pages/admin/quiz/CreateQuiz";
 
 export const AppContext = createContext<any>(undefined);
 
@@ -55,6 +56,7 @@ function App() {
             <Route path="/admin/questions" element={<QuestionBank />} />
             <Route path="/admin/tests" element={<TestBank />} />
             <Route path="/admin/leaderboard" element={<LeaderBoardDashBoard />} />
+            <Route path="/admin/create-quiz" element={<CreateQuiz />} />
             </Route>
             {/* Fallback route */}
             <Route path="*" element={<FallBack />} />
