@@ -42,3 +42,4 @@ const Question = ({ question }: { question: any }) => {
 };
 
 export default Question;
+

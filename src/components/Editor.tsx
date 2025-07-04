@@ -1,10 +1,10 @@
 import Editor from "@monaco-editor/react";
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { endTest, runCode, submitCode } from "../api/runCode";
 
 import { AuthContext } from "../context/AuthContext";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { getQuestionsFromFirebase } from "../api/getQuestionsFromFirebase";
 
 interface CodeEditorProps {
@@ -102,6 +102,7 @@ const CodeEditor = ({ question, onChange, language, setLanguage, value, updatePo
       toast.error("You have already submitted this code");
       return;
     }
+
     if (!email) {
       toast.error("Please login to submit your code");
       return;
@@ -207,12 +208,12 @@ const CodeEditor = ({ question, onChange, language, setLanguage, value, updatePo
         </button>
       </div>
 
-      {hasSubmitted && (
+      {/* { hasSubmitted && (
         <div className="mt-4">
           <p>Score: {result.score}</p>
           <p>Test Cases Passed: {result.passed}</p>
         </div>
-      )}
+      )} */}
 
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg">
         <h3 className="font-bold">Output:</h3>
