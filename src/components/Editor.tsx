@@ -207,14 +207,17 @@ const CodeEditor = ({ question, onChange, language, setLanguage, value, updatePo
           {isSubmitting ? "Loading ..." : "Submit"}
         </button>
       </div>
-
-      {/* { hasSubmitted && (
-        <div className="mt-4">
-          <p>Score: {result.score}</p>
-          <p>Test Cases Passed: {result.passed}</p>
-        </div>
-      )} */}
-
+      <div className="mt-4 p-3 bg-gray-100 border rounded-lg">
+        <h3 className="font-bold">Test Result:</h3>
+        {hasSubmitted ? (
+          <div>
+            <p>Score: {result.score}</p>
+            <p>Passed: {result.passed}</p>
+          </div>
+        ) : (
+          <p>No result yet.</p>
+        )}
+      </div>
       <div className="mt-4 p-3 bg-gray-100 border rounded-lg">
         <h3 className="font-bold">Output:</h3>
         <pre>{loading ? "Compiling ...." : output || "No output yet."}</pre>
