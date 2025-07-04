@@ -12,16 +12,16 @@ const Login = () => {
 
   const initialFormData = {
     code: {
-      code1: { "c++": "", java: "" },
-      code2: { "c++": "", java: "" },
-      code3: { "c++": "", java: "" },
-      code4: { "c++": "", java: "" },
+      code1: { "c++": "", java: "", python: "" },
+      code2: { "c++": "", java: "", python: "" },
+      code3: { "c++": "", java: "", python: "" },
+      code4: { "c++": "", java: "", python: "" },
     },
-    points : {
-      code1 : 0,
-      code2 : 0,
-      code3 : 0,
-      code4 : 0
+    points: {
+      code1: 0,
+      code2: 0,
+      code3: 0,
+      code4: 0
     }
   };
 
@@ -36,9 +36,10 @@ const Login = () => {
     try {
       await setDoc(doc(db, "code", email), initialFormData);
       setAuthEmail(email);
-      navigate("/start-test");
+      navigate("/");
     } catch (error) {
       console.error("Error adding document: ", error);
+      console.log(error)
       alert("Failed to submit data. Please try again.");
     }
   };
